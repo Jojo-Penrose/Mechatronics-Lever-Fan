@@ -5,4 +5,4 @@
 ../Core/Src/main.cpp:287:13:void MX_USART2_UART_Init()	2
 ../Core/Src/main.cpp:322:13:void MX_GPIO_Init()	1
 ../Core/Src/main.cpp:362:6:void HAL_UART_TxCpltCallback(UART_HandleTypeDef*)	1
-../Core/Src/main.cpp:370:6:void Error_Handler()	1
+../Core/Src/main.cpp:374:6:void Error_Handler()	1
