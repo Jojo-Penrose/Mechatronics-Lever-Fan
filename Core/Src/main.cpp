@@ -17,7 +17,12 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include <main.h>
+#include <string>
+#include <cstdint>
+#include <cstring>
+#include <iostream>
+using namespace std;
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -101,11 +106,30 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  // Test message. Must be unsigned char array for HAL_UART_Transmit
-  const unsigned char msg[] = "hello world\r\n";
+  // Start timers
+  // Encoder timer
+  HAL_TIM_Encoder_Start_IT (&htim2, TIM_CHANNEL_ALL);
+  // Motor PWM timer
+  HAL_TIM_PWM_Start (&htim4, TIM_CHANNEL_1);
+
+  // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
+  static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
+  const unsigned char blankchar[] = "\0";
+  // String to parrot encoder position
+  string position_str;
 
   // Non-blocking USART transmit (USART 2 for USB, message char array, length of message)
-  HAL_UART_Transmit_IT(&huart2, msg, 13);
+  // Short delay because the STM32 puts the cart before the horse
+  HAL_Delay(50);
+  HAL_UART_Transmit_IT(&huart2, blankchar, 1);
+  HAL_Delay(100);
+  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg));
+  HAL_Delay(100);
+
+  memset(&msg, '\0', sizeof(msg));
+
+  // Encoder ticks variable -- init at startup position
+  static volatile long int position_ticks = TIM2 -> CNT;
 
   /* USER CODE END 2 */
 
@@ -122,8 +146,17 @@ int main(void)
 	  {
 		  // Wait one second (BLOCKING!!!)
 		  HAL_Delay(1000);
+
+		  // Pull current encoder position
+		  position_ticks = TIM2 -> CNT;
+		  position_str = ("Encoder positon: " + to_string(position_ticks) + "\r\n");
+
+		  // Create a msg with encoder pos
+		  memset(&msg, '\0', sizeof(msg));
+		  memcpy(msg, position_str.c_str(), position_str.length() + 1);
+
 		  // Non-blocking transmit
-		  HAL_UART_Transmit_IT(&huart2, msg, 13);
+		  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
 		  // Lower transmit flag
 		  txflag = 0;
 	  }
