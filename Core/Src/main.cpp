@@ -47,14 +47,17 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+// A flag for signaling USART transmit complete
+static volatile bool txflag = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_TIM2_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -94,9 +97,15 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_TIM2_Init();
   MX_TIM4_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+
+  // Test message. Must be unsigned char array for HAL_UART_Transmit
+  const unsigned char msg[] = "hello world\r\n";
+
+  // Non-blocking USART transmit (USART 2 for USB, message char array, length of message)
+  HAL_UART_Transmit_IT(&huart2, msg, 13);
 
   /* USER CODE END 2 */
 
@@ -107,6 +116,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  // After the message transmits, wait one second and retransmit
+	  if (txflag)
+	  {
+		  // Wait one second (BLOCKING!!!)
+		  HAL_Delay(1000);
+		  // Non-blocking transmit
+		  HAL_UART_Transmit_IT(&huart2, msg, 13);
+		  // Lower transmit flag
+		  txflag = 0;
+	  }
+
   }
   /* USER CODE END 3 */
 }
@@ -181,10 +202,10 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 65535;
+  htim2.Init.Period = 4294967295;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -312,7 +333,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_6, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -320,8 +341,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD2_Pin PA6 */
-  GPIO_InitStruct.Pin = LD2_Pin|GPIO_PIN_6;
+  /*Configure GPIO pins : PA5 PA6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -334,12 +355,18 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
-
 /**
-  * @brief  This function is executed in case of error occurrence.
+  * @brief  This callback runs when the non-blocking USART transmit completes.
   * @retval None
   */
+void HAL_UART_TxCpltCallback (UART_HandleTypeDef * huart)
+{
+	//Tell the world that our transmit is complete
+	txflag = 1;
+}
+
+/* USER CODE END 4 */
+
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
