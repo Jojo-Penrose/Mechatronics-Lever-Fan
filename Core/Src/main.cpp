@@ -17,16 +17,15 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include <main.h>
 #include <string>
 #include <cstdint>
 #include <cstring>
-#include <iostream>
 using namespace std;
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,6 +113,7 @@ int main(void)
 
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
+  static char pos_char[30] = "";
   const unsigned char blankchar[] = "\0";
   // String to parrot encoder position
   string position_str;
@@ -130,6 +130,9 @@ int main(void)
 
   // Encoder ticks variable -- init at startup position
   static volatile long int position_ticks = TIM2 -> CNT;
+  static volatile float position_deg = 0.0;
+  static const float ticks2deg = 1200.0/360.0;
+  static volatile int len = 0;
 
   /* USER CODE END 2 */
 
@@ -149,11 +152,20 @@ int main(void)
 
 		  // Pull current encoder position
 		  position_ticks = TIM2 -> CNT;
-		  position_str = ("Encoder positon: " + to_string(position_ticks) + "\r\n");
+		  // Calculate encoder degrees
+		  position_deg =  static_cast< double >(position_ticks) / ticks2deg;
 
+		  // Print encoder degrees
+		  len = sprintf(pos_char, "Encoder positon: %.2f \r\n", position_deg);
+		  memset(&msg, '\0', sizeof(msg));
+		  memcpy(msg, pos_char, len + 1);
+
+		  /*// Print encoder ticks
 		  // Create a msg with encoder pos
+		  position_str = ("Encoder positon: " + to_string(position_ticks) + "\r\n");
 		  memset(&msg, '\0', sizeof(msg));
 		  memcpy(msg, position_str.c_str(), position_str.length() + 1);
+		  */
 
 		  // Non-blocking transmit
 		  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
@@ -366,7 +378,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, USER_LED_Pin|MOTOR_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, USER_LED_Pin|MOTOR_A_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -374,8 +386,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : USER_LED_Pin MOTOR_DIR_Pin */
-  GPIO_InitStruct.Pin = USER_LED_Pin|MOTOR_DIR_Pin;
+  /*Configure GPIO pins : USER_LED_Pin MOTOR_A_DIR_Pin */
+  GPIO_InitStruct.Pin = USER_LED_Pin|MOTOR_A_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

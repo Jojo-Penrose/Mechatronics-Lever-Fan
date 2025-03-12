@@ -71,16 +71,16 @@ void Error_Handler(void);
 #define USART_RX_GPIO_Port GPIOA
 #define USER_LED_Pin GPIO_PIN_5
 #define USER_LED_GPIO_Port GPIOA
-#define MOTOR_DIR_Pin GPIO_PIN_6
-#define MOTOR_DIR_GPIO_Port GPIOA
+#define MOTOR_A_DIR_Pin GPIO_PIN_6
+#define MOTOR_A_DIR_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
-#define MOTOR_PWM_Pin GPIO_PIN_6
-#define MOTOR_PWM_GPIO_Port GPIOB
+#define MOTOR_A_PWM_Pin GPIO_PIN_6
+#define MOTOR_A_PWM_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

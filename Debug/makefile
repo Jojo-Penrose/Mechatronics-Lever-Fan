@@ -85,7 +85,7 @@ main-build: Mechatronics-Lever-Fan.elf secondary-outputs
 
 # Tool invocations
 Mechatronics-Lever-Fan.elf Mechatronics-Lever-Fan.map: $(OBJS) $(USER_OBJS) C:\Users\jojo\Documents\Projects\Mechatronics-Lever-Fan\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "Mechatronics-Lever-Fan.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\jojo\Documents\Projects\Mechatronics-Lever-Fan\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Mechatronics-Lever-Fan.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "Mechatronics-Lever-Fan.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\jojo\Documents\Projects\Mechatronics-Lever-Fan\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Mechatronics-Lever-Fan.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
