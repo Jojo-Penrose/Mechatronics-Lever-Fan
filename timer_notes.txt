@@ -1,0 +1,24 @@
+clock freq = 80 MHz
+prescaler = 1
+PWM ARR = 3200
+PWM running freq = 80E06/3200 = 25 kHz
+
+Motor A pins: "DIR" = D12 = PA6 = C (L298P datasheet)
+              "PWM" = D10 = PB6 = D (L298P datasheet)
+
+L298P Motor A truth table:
+
+EN = H:
+C = H; D = L   |   Forward
+C = L; D = H   |   Backward
+C = D          |   Brake
+
+EN = L:
+C = X; D = X   |   Free running stop
+
+Translated to STM32:
+
+EN = H:
+PA6 = TIM3_CH1 = H; PB6 = TIM4_CH1 = L   |   Forward
+PA6 = TIM3_CH1 = L; PB6 = TIM4_CH1 = H   |   Backward
+PA6 = PB6                                |   Brake
