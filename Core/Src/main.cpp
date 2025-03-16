@@ -26,13 +26,17 @@
 /* Private includes ----------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
+// My headers
 #include "motor.h"
+#include "encoder.h"
 
+// C++ stuff for printing to the terminal
 #include <string>
-#include <cstdint>
 #include <cstring>
 
+// C++ business
 using namespace std;
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,55 +122,33 @@ int main(void)
   // Motor PWM timer
   HAL_TIM_PWM_Start_IT (&htim4, TIM_CHANNEL_1);
 
-
-
-
-  /*
-  // Testing some pointer stuff for the motor object
-  TIM_HandleTypeDef * Timer = &htim4;
-  uint32_t ARR_v = Timer->Instance->ARR;
-  volatile uint32_t * CCR_ptr = &(Timer->Instance->CCR1);
-  GPIO_TypeDef * DIR_Port = GPIOA;
-  uint16_t DIR_Pin = MOTOR_A_DIR_Pin;
-
-  HAL_GPIO_WritePin(DIR_Port, DIR_Pin, GPIO_PIN_SET);
-  uint32_t duty = 25;
-  *CCR_ptr = ARR_v * duty / 100;
-  */
-
-
+  // Set up motor controller
   motor_obj motor = motor_obj(&htim4, 1, GPIOA, MOTOR_A_DIR_Pin);
+  // Turn motor on
   motor.enable();
+  // Set speed to 50%
   motor.setSpeed(50);
 
-
-
-
-
-
+  // Set up encoder
+  enc_obj encoder = enc_obj(&htim2, 1200);
 
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
+
+  // Position char array memory. Need length for sprintf
   static char pos_char[30] = "";
-  const unsigned char blankchar[] = "\0";
-  // String to parrot encoder position
-  string position_str;
+  static volatile int len = 0;
 
   // Non-blocking USART transmit (USART 2 for USB, message char array, length of message)
   // Short delay because the STM32 puts the cart before the horse
   HAL_Delay(50);
-  HAL_UART_Transmit_IT(&huart2, blankchar, 1);
+  HAL_UART_Transmit_IT(&huart2, 0, 1);
   HAL_Delay(100);
   HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg));
   HAL_Delay(100);
 
+  // Wipe message buffer
   memset(&msg, '\0', sizeof(msg));
-
-  // Encoder ticks variable -- init at startup position
-  static volatile long int position_ticks = TIM2 -> CNT;
-  static volatile float position_deg = 0.0;
-  static const float ticks2deg = 1200.0/360.0;
-  static volatile int len = 0;
 
   /* USER CODE END 2 */
 
@@ -184,30 +166,20 @@ int main(void)
 		  // Wait one second (BLOCKING!!!)
 		  HAL_Delay(1000);
 
-		  // Pull current encoder position
-		  position_ticks = TIM2 -> CNT;
-		  // Calculate encoder degrees
-		  position_deg =  static_cast< double >(position_ticks) / ticks2deg;
+		  // Update encoder
+		  encoder.update();
 
 		  // Print encoder degrees
-		  len = sprintf(pos_char, "Encoder positon: %.2f \r\n", position_deg);
+		  len = sprintf(pos_char, "Encoder positon: %.2f \r\n", encoder.getAngle());
 		  memset(&msg, '\0', sizeof(msg));
 		  memcpy(msg, pos_char, len + 1);
-
-		  /*// Print encoder ticks
-		  // Create a msg with encoder pos
-		  position_str = ("Encoder positon: " + to_string(position_ticks) + "\r\n");
-		  memset(&msg, '\0', sizeof(msg));
-		  memcpy(msg, position_str.c_str(), position_str.length() + 1);
-		  */
 
 		  // Non-blocking transmit
 		  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
 		  // Lower transmit flag
 		  txflag = 0;
 
-
-
+		  // Turn off motor
 		  motor.disable();
 	  }
 

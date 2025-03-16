@@ -1,8 +1,9 @@
-../Core/Src/main.cpp:85:5:int main()	4
-../Core/Src/main.cpp:222:6:void SystemClock_Config()	4
-../Core/Src/main.cpp:272:13:void MX_TIM2_Init()	3
-../Core/Src/main.cpp:321:13:void MX_TIM4_Init()	4
-../Core/Src/main.cpp:370:13:void MX_USART2_UART_Init()	2
-../Core/Src/main.cpp:405:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:445:6:void HAL_UART_TxCpltCallback(UART_HandleTypeDef*)	1
-../Core/Src/main.cpp:457:6:void Error_Handler()	1
+../Core/Inc/encoder.h:42:11:float enc_obj::getAngle()	1
+../Core/Src/main.cpp:85:5:int main()	2
+../Core/Src/main.cpp:190:6:void SystemClock_Config()	4
+../Core/Src/main.cpp:240:13:void MX_TIM2_Init()	3
+../Core/Src/main.cpp:289:13:void MX_TIM4_Init()	4
+../Core/Src/main.cpp:338:13:void MX_USART2_UART_Init()	2
+../Core/Src/main.cpp:373:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:413:6:void HAL_UART_TxCpltCallback(UART_HandleTypeDef*)	1
+../Core/Src/main.cpp:425:6:void Error_Handler()	1

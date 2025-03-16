@@ -11,7 +11,6 @@
 #ifndef INC_MOTOR_H_
 #define INC_MOTOR_H_
 
-#include <cstdint>
 #include "stm32l4xx_hal.h"
 
 /**
@@ -22,21 +21,21 @@
  * GPIO pin that is preconfigured at instantiation. 
  *
  * @var motor_obj::speed
- * int -- Signed duty cycle w/ direction, -100<->100
+ * int -- Signed duty cycle w/ direction, -100<->100.
  * @var motor_obj::duty
- * uint32_t -- Duty cycle, 0<->100
+ * uint32_t -- Duty cycle, 0<->100.
  * @var motor_obj::en
- * bool -- 1 enabled, 0 disabled
+ * bool -- 1 enabled, 0 disabled.
  * @var motor_obj::Timer
- * TIM_HandleTypeDef * -- STM32 timer handle
+ * TIM_HandleTypeDef * -- STM32 timer handle.
  * @var motor_obj::ARR
- * uint32_t -- Value of timer auto-reload register 
+ * uint32_t -- Value of timer auto-reload register.
  * @var motor_obj::CCR
- * volatile uint32_t * -- Pointer to timer capture/compare register. CCR is 32 bits wide
+ * volatile uint32_t * -- Pointer to timer capture/compare register. CCR is 32 bits wide.
  * @var motor_obj::DIR_Port
- * GPIO_TypeDef * -- STM32 GPIO port handle
+ * GPIO_TypeDef * -- STM32 GPIO port handle.
  * @var motor_obj::DIR_Pin
- * uint16_t * -- Alias for direction control GPIO pin
+ * uint16_t * -- Alias for direction control GPIO pin.
  */
 class motor_obj {
 private:

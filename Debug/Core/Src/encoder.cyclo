@@ -1,0 +1,2 @@
+../Core/Src/encoder.cpp:19:1:enc_obj::enc_obj(TIM_HandleTypeDef*, int)	1
+../Core/Src/encoder.cpp:38:6:void enc_obj::update()	1
