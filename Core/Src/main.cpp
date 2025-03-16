@@ -20,15 +20,14 @@
 
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
-
 /* USER CODE BEGIN Includes */
 // My headers
 #include "motor.h"
 #include "encoder.h"
+#include "controller.h"
 
 // C++ stuff for printing to the terminal
 #include <string>
@@ -57,6 +56,7 @@ using namespace std;
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim5;
 
 UART_HandleTypeDef huart2;
 
@@ -64,6 +64,9 @@ UART_HandleTypeDef huart2;
 
 // A flag for signaling USART transmit complete
 static volatile bool txflag = 0;
+
+// A flag for signaling Timer 5 OC
+static volatile bool tim5flag = 0;
 
 /* USER CODE END PV */
 
@@ -73,6 +76,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -114,6 +118,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM4_Init();
   MX_TIM2_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 
   // Start timers
@@ -121,6 +126,8 @@ int main(void)
   HAL_TIM_Encoder_Start_IT (&htim2, TIM_CHANNEL_ALL);
   // Motor PWM timer
   HAL_TIM_PWM_Start_IT (&htim4, TIM_CHANNEL_1);
+  // Controller timebase
+  HAL_TIM_Base_Start_IT (&htim5);
 
   // Set up motor controller
   motor_obj motor = motor_obj(&htim4, 1, GPIOA, MOTOR_A_DIR_Pin);
@@ -136,7 +143,7 @@ int main(void)
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
 
   // Position char array memory. Need length for sprintf
-  static char pos_char[30] = "";
+  static char pos_char[100] = "";
   static volatile int len = 0;
 
   // Non-blocking USART transmit (USART 2 for USB, message char array, length of message)
@@ -160,12 +167,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  // After the message transmits, wait one second and retransmit
-	  if (txflag)
+	  // Transmit encoder position every second
+	  // Check for transmit complete & one second elapsed on TIM5
+	  if (txflag && tim5flag)
 	  {
-		  // Wait one second (BLOCKING!!!)
-		  HAL_Delay(1000);
-
 		  // Update encoder
 		  encoder.update();
 
@@ -176,8 +181,12 @@ int main(void)
 
 		  // Non-blocking transmit
 		  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
+
 		  // Lower transmit flag
 		  txflag = 0;
+
+		  // Lower Timer 5 flag
+		  tim5flag = 0;
 
 		  // Turn off motor
 		  motor.disable();
@@ -306,7 +315,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 3200;
+  htim4.Init.Period = 3199;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
@@ -331,6 +340,51 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 2 */
   HAL_TIM_MspPostInit(&htim4);
+
+}
+
+/**
+  * @brief TIM5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM5_Init(void)
+{
+
+  /* USER CODE BEGIN TIM5_Init 0 */
+
+  /* USER CODE END TIM5_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM5_Init 1 */
+
+  /* USER CODE END TIM5_Init 1 */
+  htim5.Instance = TIM5;
+  htim5.Init.Prescaler = 79;
+  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim5.Init.Period = 999999;
+  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM5_Init 2 */
+
+  /* USER CODE END TIM5_Init 2 */
 
 }
 
@@ -388,7 +442,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, USER_LED_Pin|MOTOR_A_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|MOTOR_A_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -396,8 +450,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : USER_LED_Pin MOTOR_A_DIR_Pin */
-  GPIO_InitStruct.Pin = USER_LED_Pin|MOTOR_A_DIR_Pin;
+  /*Configure GPIO pins : PA5 MOTOR_A_DIR_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|MOTOR_A_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -418,6 +472,15 @@ void HAL_UART_TxCpltCallback (UART_HandleTypeDef * huart)
 {
 	//Tell the world that our transmit is complete
 	txflag = 1;
+}
+
+void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef * htim)
+{
+	// Check for Timer 5
+	if (htim == &htim5)
+	{
+		tim5flag = 1;
+	}
 }
 
 /* USER CODE END 4 */
