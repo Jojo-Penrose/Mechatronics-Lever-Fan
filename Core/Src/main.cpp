@@ -15,16 +15,23 @@
   *
   ******************************************************************************
   */
+
+
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
+
 /* USER CODE BEGIN Includes */
-#include <main.h>
+// #include "motor.h"
+
 #include <string>
 #include <cstdint>
 #include <cstring>
+
 using namespace std;
 /* USER CODE END Includes */
 
@@ -111,6 +118,32 @@ int main(void)
   // Motor PWM timer
   HAL_TIM_PWM_Start_IT (&htim4, TIM_CHANNEL_1);
 
+
+
+
+  // Testing some pointer stuff for the motor object
+
+  TIM_HandleTypeDef * Timer = &htim4;
+  uint32_t ARR_v = Timer->Instance->ARR;
+  volatile uint32_t * CCR_ptr = &(Timer->Instance->CCR1);
+  GPIO_TypeDef * DIR_Port = GPIOA;
+  uint16_t DIR_Pin = MOTOR_A_DIR_Pin;
+
+  HAL_GPIO_WritePin(DIR_Port, DIR_Pin, GPIO_PIN_SET);
+  uint32_t duty = 25;
+  *CCR_ptr = ARR_v * duty / 100;
+
+
+
+  // Start the PWM output at 50% duty
+  // TIM4 -> CCR1 = TIM4 -> ARR * duty / 100;
+
+
+
+
+
+
+
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
   static char pos_char[30] = "";
@@ -133,10 +166,6 @@ int main(void)
   static volatile float position_deg = 0.0;
   static const float ticks2deg = 1200.0/360.0;
   static volatile int len = 0;
-
-  // Start the PWM output at 50% duty
-  static volatile int duty = 50;
-  TIM4 -> CCR1 = TIM4 -> ARR * duty / 100;
 
   /* USER CODE END 2 */
 
