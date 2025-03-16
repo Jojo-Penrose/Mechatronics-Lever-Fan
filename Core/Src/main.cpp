@@ -109,7 +109,7 @@ int main(void)
   // Encoder timer
   HAL_TIM_Encoder_Start_IT (&htim2, TIM_CHANNEL_ALL);
   // Motor PWM timer
-  HAL_TIM_PWM_Start (&htim4, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start_IT (&htim4, TIM_CHANNEL_1);
 
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
@@ -133,6 +133,10 @@ int main(void)
   static volatile float position_deg = 0.0;
   static const float ticks2deg = 1200.0/360.0;
   static volatile int len = 0;
+
+  // Start the PWM output at 50% duty
+  static volatile int duty = 50;
+  TIM4 -> CCR1 = TIM4 -> ARR * duty / 100;
 
   /* USER CODE END 2 */
 
