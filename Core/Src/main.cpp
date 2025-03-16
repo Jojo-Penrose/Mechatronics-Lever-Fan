@@ -26,7 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
-// #include "motor.h"
+#include "motor.h"
 
 #include <string>
 #include <cstdint>
@@ -121,8 +121,8 @@ int main(void)
 
 
 
+  /*
   // Testing some pointer stuff for the motor object
-
   TIM_HandleTypeDef * Timer = &htim4;
   uint32_t ARR_v = Timer->Instance->ARR;
   volatile uint32_t * CCR_ptr = &(Timer->Instance->CCR1);
@@ -132,11 +132,12 @@ int main(void)
   HAL_GPIO_WritePin(DIR_Port, DIR_Pin, GPIO_PIN_SET);
   uint32_t duty = 25;
   *CCR_ptr = ARR_v * duty / 100;
+  */
 
 
-
-  // Start the PWM output at 50% duty
-  // TIM4 -> CCR1 = TIM4 -> ARR * duty / 100;
+  motor_obj motor = motor_obj(&htim4, 1, GPIOA, MOTOR_A_DIR_Pin);
+  motor.enable();
+  motor.setSpeed(50);
 
 
 
@@ -204,6 +205,10 @@ int main(void)
 		  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
 		  // Lower transmit flag
 		  txflag = 0;
+
+
+
+		  motor.disable();
 	  }
 
   }
