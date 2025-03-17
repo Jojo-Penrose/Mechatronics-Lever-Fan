@@ -1,7 +1,8 @@
+***********   Motor Controller - TIM4CH1   ***********
 clock freq = 80 MHz
 prescaler = 1
-PWM ARR = 3200
-PWM running freq = 80E06/3200 = 25 kHz
+PWM ARR = 3199
+PWM toggle freq = 80E06 / (3199 + 1) = 25 kHz
 
 Motor A pins: "DIR" = D12 = PA6 = C (L298P datasheet)
               "PWM" = D10 = PB6 = D (L298P datasheet)
@@ -19,6 +20,16 @@ C = X; D = X   |   Free running stop
 Translated to STM32:
 
 EN = H:
-PA6 = TIM3_CH1 = H; PB6 = TIM4_CH1 = L   |   Forward
-PA6 = TIM3_CH1 = L; PB6 = TIM4_CH1 = H   |   Backward
-PA6 = PB6                                |   Brake
+PA6 = H; PB6 = TIM4_CH1 = L   |   Forward
+PA6 = L; PB6 = TIM4_CH1 = H   |   Backward
+PA6 = PB6                     |   Brake
+
+
+***********   CLosed-Loop Controller "RTC" - TIM5CH1   ***********
+Count frequency: 1 MHz
+Prescaler: 80 MHz / (79 + 1) = 1 MHz
+Counts at 1/1E06 = 1us/tick
+Overflow @ 1 msec: 1E06 / (999 + 1) = 1E03
+
+
+

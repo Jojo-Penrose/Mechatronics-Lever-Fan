@@ -1,0 +1,142 @@
+Timestamp data from video free vibration and protractor measurements from stills:
+
+t_0 = 1.682s @ 50deg
+t_zc1 = 1.849s
+t_pk1 = 1.981s @ 28deg
+t_zc2 = 2.115s
+t_pk2 = 2.282s @ -24deg
+t_zc3 = 2.449s
+t_pk3 = 2.615s @ 21deg
+t_zc4 = 2.783s
+t_pk4 = 2.949s @ -14deg
+t_zc5 = 3.116s
+t_pk5 = 3.250s @ 13deg
+t_zc6 = 3.450s
+t_pk6 = 3.584s @ -6deg
+
+(probably unreliable from here -- sticktion. -6deg doesn't make sense either)
+
+
+
+Using Octave (FOSS MATLAB) to approximate natural frequency:
+
+octave:15> t_zc = [1.849 2.115 2.449 2.783 3.116 3.450]
+t_zc =
+
+   1.8490   2.1150   2.4490   2.7830   3.1160   3.4500
+
+octave:16> t_sum = 0
+t_sum = 0
+
+octave:17> for i = 2:length(t_zc)
+> > t_sum = t_sum + t_zc(i) - t_zc(i-1)
+> > end
+t_sum = 0.2660
+t_sum = 0.6000
+t_sum = 0.9340
+t_sum = 1.2670
+t_sum = 1.6010
+
+octave:18> T_est = 2*t_sum/length(t_zc)
+T_est = 0.5337
+
+octave:19> w_d_est = 1/T_est
+w_d_est = 1.8738
+
+
+
+Using Octave to approximate damping ratio:
+
+octave:23> delta = []
+delta = [](0x0)
+
+octave:24> for i = 2:length(theta_pk_pos)
+> > delta(end+1) = 1/(i-1)*log(theta_pk_pos(i-1)/theta_pk_pos(i))
+> > end
+delta = 0.2877
+delta =
+
+   0.2877   0.2398
+
+octave:28> delta_est = mean(delta)
+delta_est = 0.2637
+
+octave:29> zeta_est = delta_est / sqrt(4*pi^2 + delta_est^2)
+zeta_est = 0.041938
+
+octave:30> w_n_est = w_d_est / sqrt(1 - zeta_est^2)
+w_n_est = 1.8755
+
+
+
+Using Octave to get approximate underdamped response params:
+
+octave:2> wn = 1.8755
+wn = 1.8755
+
+octave:3> wd = 1.8738
+wd = 1.8738
+
+octave:4> zeta = 0.041938
+zeta = 0.041938
+
+octave:5> x0 = 50
+x0 = 50
+
+octave:6> A = sqrt( ( (zeta*wn*x0)^2 + (x0*wd)^2 ) / (wd^2) )
+A = 50.044
+
+octave:7> phi = atan2(x0*wd, zeta*wn*x0)
+phi = 1.5288
+
+octave:8> exp = -zeta*wn
+exp = -0.078655
+
+
+
+Desmos plot function of estimated free vibration:
+
+y=\ 50.044e^{-0.078655t}\sin\left(1.8738t\ +\ 1.5288\right)\left\{0\le t\right\}
+
+
+
+Takeaway: I definitely screwed up the angle measurements from the video.
+
+
+
+ALTERNATE GRAPHICAL METHOD:
+
+Frequency calcs were good. So, build the generic 2nd order free vibration and 
+set damping until it matches.
+
+X0 = 90 degrees (Oh I think I screwed up the sign of x0 on the first one.)
+X_pk1 = -(90-14) = -76 degrees
+
+y\ =\ Ae^{-zw_{n}t}\sin\left(w_{d}t+\phi\right)\left\{0\le t\right\}
+w_{d}=1.8738
+w_{n}=1.8755
+x_{0}=90
+
+Tuning to get X_pk1 = -76.4:
+z=0.052
+
+That's actually super close! Good for me!
+
+What this shows is that the initial response follows a second-order system, but
+the sticktion kicks in when the velocity drops. So, this is a pretty bad second-
+order approximation actually. The good news is that PID tuning really doesn't care
+because it's an iterative, experimental process. Without knowing the plant, numerical
+approximation can't be done anyway. It would be possible to do a step response test
+but that's totally unnecessary.
+
+To explain the touchy nature of the controller gains, the system looks like a severely
+underdamped second-order system at the start, when initial velocity is high. But the
+sticktion kicks in hard when the velocity starts to drop. That is why the system is
+unstable at Ki = 0.000002 and only slightly underdamped at Ki = 0.0000015. The system
+is, technically, non-linear. The linear portion covers the initial response at high
+velocity. The non-linear portion covers the settling time at low velocity. The linear
+portion needs small gains to be stable. The non-linear portion needs high gain to reach
+steady-state. A different control scheme will probably work better (this one is not LTI),
+but actually measuring the plant and sticktion would take way more effort than the project
+actually needs. It wasn't really the point, either, but having these approximations will
+definitely inform my control system design from here on out.
