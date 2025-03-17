@@ -4,7 +4,12 @@
  * @date 16 Mar 2025
  * @brief Closed-loop PID controller for the STM32.
  *
- * how do it do
+ * Controller class needs three things:
+ *  1) A timer set to count ticks as unsigned microseconds
+ *  2) A plant object with an "apply output" method that accepts numerical effort
+ *  3) A sensor object with a "return input" method that provides numerical measurement
+ * Uses class templates for Plant and Sensor. Instantiated with pointers to 
+ * object and class method for each.
  */
 // controller.h
 #ifndef INC_CONTROLLER_H_
