@@ -20,7 +20,7 @@
  * A motor in this context uses one channel of a PWM-enabled timer and one 
  * GPIO pin that is preconfigured at instantiation. 
  *
- * @var motor_obj::speed
+ * @var motor_obj::effort
  * int -- Signed duty cycle w/ direction, -100<->100.
  * @var motor_obj::duty
  * uint32_t -- Duty cycle, 0<->100.
@@ -39,7 +39,7 @@
  */
 class motor_obj {
 private:
-    int                 speed;
+    int                 effort;
     uint32_t            duty;
     bool                en;
     TIM_HandleTypeDef * Timer;
@@ -50,11 +50,11 @@ private:
 public:
     motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin);
     
-    void setSpeed (int speed_in);
+    void setEffort (int effort);
     void disable ();
     void enable ();
     
-    int getSpeed () { return speed; }
+    int getEffort () { return effort; }
     bool getEnable () { return en; }
 };
 

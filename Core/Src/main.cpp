@@ -142,7 +142,7 @@ int main(void)
   // Controller object needs types for plant and sensor templates
   control_obj<motor_obj, enc_obj> controller =
 		  control_obj<motor_obj, enc_obj>(&htim5,
-				  &motor, &motor_obj::setSpeed,
+				  &motor, &motor_obj::setEffort,
 				  &encoder, &enc_obj::getAngle);
 
   // Test controller by calling run function
@@ -186,7 +186,7 @@ int main(void)
 		  controller.readSensor();
 
 		  // Print encoder degrees
-		  len = sprintf(pos_char, "Encoder positon: %.2f \r\n", controller.retSensor());
+		  len = sprintf(pos_char, "Encoder position: %.2f \r\n", controller.retSensor());
 		  memset(&msg, '\0', sizeof(msg));
 		  memcpy(msg, pos_char, len + 1);
 

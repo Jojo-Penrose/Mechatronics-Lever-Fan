@@ -40,7 +40,7 @@ motor_obj::motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIO
     
     // Initialize w/ motor off
     duty = 0;
-    speed = 0;
+    effort = 0;
     en = 0;
     
     // Make it so: set registers to brake
@@ -53,26 +53,26 @@ motor_obj::motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIO
  *          Accepts signed desired speed from -100<->100. Checks sign,
  *          updates direction pin, saturates duty cycle, updates PWM CCR. 
  *
- * @param   speed_in        Desired duty cycle, signed.
+ * @param   effort          Desired duty cycle, signed.
  */
- void motor_obj::setSpeed(int speed_in) {
+ void motor_obj::setEffort(int effort) {
     // Store that speed
-    speed = speed_in;
+    effort = effort;
     
     // Disabled motor check
     if (!en){ return; }
 
     // Speed saturation
-    if (speed > 100){ speed = 100; }
-    else if (speed < -100){ speed = -100; }
+    if (effort > 100){ effort = 100; }
+    else if (effort < -100){ effort = -100; }
     
     // Set direction pin & fill duty
     // Sign flip for reverse
-    if (speed < 0) { 
-        duty = -speed; 
+    if (effort < 0) { 
+        duty = -effort; 
         HAL_GPIO_WritePin(DIR_Port, DIR_Pin, GPIO_PIN_SET);
     } else { 
-        duty = speed;
+        duty = effort;
         HAL_GPIO_WritePin(DIR_Port, DIR_Pin, GPIO_PIN_RESET);
     }
     
