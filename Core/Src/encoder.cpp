@@ -16,7 +16,7 @@
  * @param   htim            Handle to timer.
  * @param   ticksprev       Number of counter ticks in one full revolution.
  */
-enc_obj::enc_obj (TIM_HandleTypeDef * htim, int TicksPerRev) {
+enc_obj :: enc_obj (TIM_HandleTypeDef * htim, int TicksPerRev) {
     // Set encoder timer handle
     Timer = htim;
     
@@ -35,10 +35,11 @@ enc_obj::enc_obj (TIM_HandleTypeDef * htim, int TicksPerRev) {
  *          Pull encoder counts, calculate degrees.
  *
  */
-void enc_obj::update () {
+float enc_obj :: update () {
     // Pull current encoder count
     count = Timer->Instance->CNT;
     
-    // Calculate angle
+    // Calculate & return angle
     angle = count*ticks2deg;
+    return angle;
 }

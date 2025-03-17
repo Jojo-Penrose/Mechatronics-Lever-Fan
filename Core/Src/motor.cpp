@@ -85,7 +85,7 @@ motor_obj::motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIO
  *          Disable 'en' boolean, force direction low, set CCR to 0.
  *
  */
-void motor_obj::disable () {
+void motor_obj :: disable () {
     en = 0;
     
     // Make it so: set registers to brake
@@ -98,7 +98,7 @@ void motor_obj::disable () {
  *          Enable 'en' boolean, force direction low, set CCR to last duty cycle.
  *
  */    
-void motor_obj::enable () {
+void motor_obj :: enable () {
     en = 1;
     
     // Make it so: set registers to run

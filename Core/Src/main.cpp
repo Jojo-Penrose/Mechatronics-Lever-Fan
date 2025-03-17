@@ -132,21 +132,20 @@ int main(void)
 
   // Set up motor controller
   motor_obj motor = motor_obj(&htim4, 1, GPIOA, MOTOR_A_DIR_Pin);
-  // Turn motor on
-  motor.enable();
 
   // Set up encoder
   enc_obj encoder = enc_obj(&htim2, 1200);
 
   // Set up controller
   // Controller object needs types for plant and sensor templates
-  control_obj<motor_obj, enc_obj> controller =
-		  control_obj<motor_obj, enc_obj>(&htim5,
-				  &motor, &motor_obj::setEffort,
-				  &encoder, &enc_obj::getAngle);
-
-  // Test controller by calling run function
-  controller.runPlant(100);
+  control_obj <motor_obj, enc_obj> controller =
+		  control_obj <motor_obj, enc_obj> (&htim5,
+				  &motor, &motor_obj :: setEffort,
+				  &encoder, &enc_obj :: update);
+  // Set gains
+  controller.setGains(50.0, 0.0015, 100.0, 0.001);
+  // Set setpoint
+  controller.setPoint(25.0);
 
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";
@@ -166,6 +165,9 @@ int main(void)
   // Wipe message buffer
   memset(&msg, '\0', sizeof(msg));
 
+  // Turn motor on
+  motor.enable();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -178,29 +180,31 @@ int main(void)
 
 	  // Transmit encoder position every second
 	  // Check for transmit complete & one second elapsed on TIM5
-	  if (txflag && tim5flag)
+	  if (tim5flag)
 	  {
-		  // Update encoder
-		  encoder.update();
+		  // Run controller
+		  controller.runControl();
 
-		  controller.readSensor();
+		  // Print encoder if transmit complete
+		  if (txflag)
+		  {
+			  // Print encoder degrees
+			  len = sprintf(pos_char, "Encoder position: %.2f \r\n", controller.retSensor());
+			  memset(&msg, '\0', sizeof(msg));
+			  memcpy(msg, pos_char, len + 1);
 
-		  // Print encoder degrees
-		  len = sprintf(pos_char, "Encoder position: %.2f \r\n", controller.retSensor());
-		  memset(&msg, '\0', sizeof(msg));
-		  memcpy(msg, pos_char, len + 1);
+			  // Non-blocking transmit
+			  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
 
-		  // Non-blocking transmit
-		  HAL_UART_Transmit_IT(&huart2, msg, sizeof(msg) - 1);
-
-		  // Lower transmit flag
-		  txflag = 0;
+			  // Lower transmit flag
+			  txflag = 0;
+		  }
 
 		  // Lower Timer 5 flag
 		  tim5flag = 0;
 
 		  // Turn off motor
-		  motor.disable();
+		  // motor.disable();
 	  }
 
   }
@@ -375,7 +379,7 @@ static void MX_TIM5_Init(void)
   htim5.Instance = TIM5;
   htim5.Init.Prescaler = 79;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 999999;
+  htim5.Init.Period = 999;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim5) != HAL_OK)

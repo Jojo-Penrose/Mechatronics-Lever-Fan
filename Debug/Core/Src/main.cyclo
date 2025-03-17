@@ -1,15 +1,18 @@
-../Core/Inc/encoder.h:42:11:float enc_obj::getAngle()	1
-../Core/Src/main.cpp:94:5:int main()	4
-../Core/Src/main.cpp:214:6:void SystemClock_Config()	4
-../Core/Src/main.cpp:264:13:void MX_TIM2_Init()	3
-../Core/Src/main.cpp:313:13:void MX_TIM4_Init()	4
-../Core/Src/main.cpp:362:13:void MX_TIM5_Init()	4
-../Core/Src/main.cpp:407:13:void MX_USART2_UART_Init()	2
-../Core/Src/main.cpp:442:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:482:6:void HAL_UART_TxCpltCallback(UART_HandleTypeDef*)	1
-../Core/Src/main.cpp:488:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
-../Core/Src/main.cpp:503:6:void Error_Handler()	1
-../Core/Inc/controller.h:54:5:control_obj<PlantClass, SensorClass>::control_obj(TIM_HandleTypeDef*, PlantClass*, void (PlantClass::*)(int), SensorClass*, float (SensorClass::*)()) [with PlantClass = motor_obj; SensorClass = enc_obj]	1
-../Core/Inc/controller.h:71:6:void control_obj<PlantClass, SensorClass>::runPlant(int) [with PlantClass = motor_obj; SensorClass = enc_obj]	2
-../Core/Inc/controller.h:81:6:void control_obj<PlantClass, SensorClass>::readSensor() [with PlantClass = motor_obj; SensorClass = enc_obj]	2
-../Core/Inc/controller.h:62:11:float control_obj<PlantClass, SensorClass>::retSensor() [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Src/main.cpp:94:5:int main()	3
+../Core/Src/main.cpp:218:6:void SystemClock_Config()	4
+../Core/Src/main.cpp:268:13:void MX_TIM2_Init()	3
+../Core/Src/main.cpp:317:13:void MX_TIM4_Init()	4
+../Core/Src/main.cpp:366:13:void MX_TIM5_Init()	4
+../Core/Src/main.cpp:411:13:void MX_USART2_UART_Init()	2
+../Core/Src/main.cpp:446:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:486:6:void HAL_UART_TxCpltCallback(UART_HandleTypeDef*)	1
+../Core/Src/main.cpp:492:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
+../Core/Src/main.cpp:507:6:void Error_Handler()	1
+../Core/Inc/controller.h:87:5:control_obj<PlantClass, SensorClass>::control_obj(TIM_HandleTypeDef*, PlantClass*, void (PlantClass::*)(int), SensorClass*, float (SensorClass::*)()) [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Inc/controller.h:118:6:void control_obj<PlantClass, SensorClass>::setGains(float, float, float, float) [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Inc/controller.h:132:6:void control_obj<PlantClass, SensorClass>::setPoint(float) [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Inc/controller.h:179:6:void control_obj<PlantClass, SensorClass>::runControl() [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Inc/controller.h:105:11:float control_obj<PlantClass, SensorClass>::retSensor() [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Inc/controller.h:153:6:void control_obj<PlantClass, SensorClass>::readSensor() [with PlantClass = motor_obj; SensorClass = enc_obj]	2
+../Core/Inc/controller.h:163:6:void control_obj<PlantClass, SensorClass>::getDt() [with PlantClass = motor_obj; SensorClass = enc_obj]	1
+../Core/Inc/controller.h:143:6:void control_obj<PlantClass, SensorClass>::runPlant(int) [with PlantClass = motor_obj; SensorClass = enc_obj]	2

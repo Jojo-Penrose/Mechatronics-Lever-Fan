@@ -38,7 +38,7 @@ private:
 public:
     enc_obj (TIM_HandleTypeDef * htim, int ticksprev);
     
-    void update ();
+    float update ();
     float getAngle () { return angle; }
 };
 
