@@ -32,6 +32,7 @@
 // C++ stuff for printing to the terminal
 #include <string>
 #include <cstring>
+#include <functional>
 
 // C++ business
 using namespace std;
@@ -133,11 +134,16 @@ int main(void)
   motor_obj motor = motor_obj(&htim4, 1, GPIOA, MOTOR_A_DIR_Pin);
   // Turn motor on
   motor.enable();
-  // Set speed to 50%
-  motor.setSpeed(50);
 
   // Set up encoder
   enc_obj encoder = enc_obj(&htim2, 1200);
+
+  // Set up controller
+  // Controller object needs motor_obj type for plant template
+  control_obj<motor_obj> controller = control_obj<motor_obj>(&htim5, &motor, &motor_obj::setSpeed);
+
+  // Test controller by calling run function
+  controller.runPlant(100);
 
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";

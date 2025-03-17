@@ -1,2 +1,0 @@
-../Core/Src/controller.cpp:18:1:control_obj::control_obj(TIM_HandleTypeDef*, int)	1
-../Core/Src/controller.cpp:37:6:void control_obj::update()	1

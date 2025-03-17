@@ -32,7 +32,7 @@
 class enc_obj {
 private:
     float               ticks2deg;
-     int32_t            count;
+    int32_t             count;
     float               angle;
     TIM_HandleTypeDef * Timer;
 public:
