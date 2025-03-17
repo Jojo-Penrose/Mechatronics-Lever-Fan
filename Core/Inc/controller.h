@@ -11,7 +11,6 @@
 #define INC_CONTROLLER_H_
 
 #include "stm32l4xx_hal.h"
-#include <functional>
 
 /**
  * @class control_obj
@@ -34,7 +33,7 @@
  * @var enc_obj::Timer
  * void (PlantClass::*PlantFunc)(int) -- Pointer to Plant.(output function).
  */
-template <typename PlantClass> 
+template <class PlantClass, class SensorClass> 
 class control_obj {
 private:
     float                   Kp, Ki, Kd;
@@ -43,14 +42,19 @@ private:
     TIM_HandleTypeDef *     Timer;
     PlantClass *            Plant;
     void (PlantClass::*PlantFunc)(int);
+    SensorClass *           Sensor;
+    float (SensorClass::*SensorFunc)();
     
 public:
     control_obj (TIM_HandleTypeDef * htim, 
-        PlantClass * PlantObj, void (PlantClass::*PlantFunc)(int))
-        : Timer(htim), Plant(PlantObj), PlantFunc(PlantFunc) {}
+        PlantClass * PlantObj, void (PlantClass::*PlantFunc)(int), 
+        SensorClass * SensorObj, float (SensorClass::*SensorFunc)())
+        : Timer(htim), Plant(PlantObj), PlantFunc(PlantFunc), 
+                       Sensor(SensorObj), SensorFunc(SensorFunc) {}
 
     void runPlant (int val);
     void readSensor();
+    float retSensor() { return sensorVal; }
 };
 
 /**
@@ -58,8 +62,8 @@ public:
  *
  * @param   val             Effort value to send to plant.
  */
-template <typename PlantClass>
-void control_obj<PlantClass>::runPlant (int val) {
+template <class PlantClass, class SensorClass>
+void control_obj<PlantClass, SensorClass>::runPlant (int val) {
     // Construct pointer to plant member function, pass val
     (*Plant.*PlantFunc)(val);
 }
@@ -68,9 +72,10 @@ void control_obj<PlantClass>::runPlant (int val) {
  * @brief   Read input from the sensor.
  *
  */
-template <typename PlantClass>
-void control_obj<PlantClass>::readSensor () {
-    // Load sensorVal
+template <class PlantClass, class SensorClass>
+void control_obj<PlantClass, SensorClass>::readSensor () {
+    // Construct pointer to sensor member function, load sensorVal
+    sensorVal = static_cast<float>((*Sensor.*SensorFunc)());
 }
 
 #endif /* INC_CONTROLLER_H_ */
