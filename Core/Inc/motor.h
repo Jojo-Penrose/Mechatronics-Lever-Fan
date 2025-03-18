@@ -12,17 +12,7 @@
 #define INC_MOTOR_H_
 
 #include "stm32l4xx_hal.h"
-
-/**
- * @class BasePlant
- * @brief An interface class to give controller & scheduler access to a plant obj.
- *
- * Override RunPlant(int) with your plant's effort input function.
- */
-class BasePlant {
-public:
-    virtual void RunPlant (int effort) {};
-};
+#include "BasePlant.h"
 
 /**
  * @class motor_obj

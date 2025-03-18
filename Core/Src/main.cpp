@@ -28,6 +28,8 @@
 #include "motor.h"
 #include "encoder.h"
 #include "controller.h"
+#include "BasePlant.h"
+#include "BaseSensor.h"
 
 // C++ stuff for printing to the terminal
 #include <string>

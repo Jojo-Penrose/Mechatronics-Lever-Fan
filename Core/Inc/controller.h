@@ -15,8 +15,8 @@
 #define INC_CONTROLLER_H_
 
 #include "stm32l4xx_hal.h"
-#include "motor.h"
-#include "encoder.h"
+#include "BasePlant.h"
+#include "BaseSensor.h"
 
 /**
  * @class control_obj

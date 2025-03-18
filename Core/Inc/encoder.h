@@ -12,17 +12,7 @@
 #define INC_ENCODER_H_
 
 #include "stm32l4xx_hal.h"
-
-/**
- * @class BaseSensor
- * @brief An interface class to give controller & scheduler access to a sensor obj.
- *
- * Override PollSensor(int) with your plant's sensor read function.
- */
-class BaseSensor {
-public:
-    virtual float PollSensor () { return 0; };
-};
+#include "BaseSensor.h"
 
 /**
  * @class enc_obj
