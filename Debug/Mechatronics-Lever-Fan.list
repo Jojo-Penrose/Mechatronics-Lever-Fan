@@ -1972,7 +1972,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 	  // Transmit encoder position every second
-	  // Check for transmit complete & one second elapsed on TIM5
+	  // Check for transmit complete & one millisecond elapsed on TIM5
 	  if (tim5flag)
  8001412:	4b26      	ldr	r3, [pc, #152]	@ (80014ac <main+0x164>)
  8001414:	781b      	ldrb	r3, [r3, #0]

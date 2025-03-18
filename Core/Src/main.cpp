@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.c
+  * @file           : main.cpp
   * @brief          : Main program body
   ******************************************************************************
   * @attention
@@ -177,7 +177,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 	  // Transmit encoder position every second
-	  // Check for transmit complete & one second elapsed on TIM5
+	  // Check for transmit complete & one millisecond elapsed on TIM5
 	  if (tim5flag)
 	  {
 		  // Run controller
