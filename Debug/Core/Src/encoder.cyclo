@@ -1,2 +1,6 @@
+../Core/Inc/encoder.h:24:19:virtual float BaseSensor::PollSensor()	1
+../Core/Inc/encoder.h:52:11:virtual float enc_obj::PollSensor()	1
+../Core/Inc/encoder.h:54:11:float enc_obj::getAngle()	1
+../Core/Inc/encoder.h:22:7:constexpr BaseSensor::BaseSensor()	1
 ../Core/Src/encoder.cpp:19:1:enc_obj::enc_obj(TIM_HandleTypeDef*, int)	1
 ../Core/Src/encoder.cpp:38:7:float enc_obj::update()	1

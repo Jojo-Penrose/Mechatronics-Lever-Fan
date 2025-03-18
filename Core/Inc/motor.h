@@ -14,6 +14,17 @@
 #include "stm32l4xx_hal.h"
 
 /**
+ * @class BasePlant
+ * @brief An interface class to give controller & scheduler access to a plant obj.
+ *
+ * Override RunPlant(int) with your plant's effort input function.
+ */
+class BasePlant {
+public:
+    virtual void RunPlant (int effort) {};
+};
+
+/**
  * @class motor_obj
  * @brief A PWM-driven motor object to use with the STM32.
  *
@@ -37,7 +48,7 @@
  * @var motor_obj::DIR_Pin
  * uint16_t * -- Alias for direction control GPIO pin.
  */
-class motor_obj {
+class motor_obj : public BasePlant {
 private:
     int                 effort;
     uint32_t            duty;
@@ -50,6 +61,7 @@ private:
 public:
     motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin);
     
+    void RunPlant (int effort) override { setEffort(effort); }
     void setEffort (int effort);
     void disable ();
     void enable ();

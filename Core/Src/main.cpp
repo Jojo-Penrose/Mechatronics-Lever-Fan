@@ -137,15 +137,11 @@ int main(void)
   enc_obj encoder = enc_obj(&htim2, 1200);
 
   // Set up controller
-  // Controller object needs types for plant and sensor templates
-  control_obj <motor_obj, enc_obj> controller =
-		  control_obj <motor_obj, enc_obj> (&htim5,
-				  &motor, &motor_obj :: setEffort,
-				  &encoder, &enc_obj :: update);
+  control_obj controller = control_obj (&htim5, &motor, &encoder);
   // Set gains
   controller.setGains(50.0, 0.0015, 100.0, 0.001);
   // Set setpoint
-  controller.setPoint(25.0);
+  controller.setPoint(35.0);
 
   // Message data buffer. Must be unsigned char array for HAL_UART_Transmit
   static unsigned char msg[100] = "Starting up. This string has to be long, for reasons.\r\n";

@@ -1,3 +1,6 @@
+../Core/Inc/motor.h:24:18:virtual void BasePlant::RunPlant(int)	16	static
+../Core/Inc/motor.h:64:10:virtual void motor_obj::RunPlant(int)	16	static
+../Core/Inc/motor.h:22:7:constexpr BasePlant::BasePlant()	16	static
 ../Core/Src/motor.cpp:21:1:motor_obj::motor_obj(TIM_HandleTypeDef*, int, GPIO_TypeDef*, uint16_t)	24	static
 ../Core/Src/motor.cpp:58:7:void motor_obj::setEffort(int)	16	static
 ../Core/Src/motor.cpp:88:6:void motor_obj::disable()	16	static

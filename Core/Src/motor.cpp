@@ -18,7 +18,7 @@
  * @param   GPIOx           Handle to GPIO port.
  * @param   GPIO_Pin        GPIO pin alias.
  */
-motor_obj::motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin) {
+motor_obj :: motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin) {
     // Set motor controller PWM timer handle
     Timer = htim;
     
@@ -55,7 +55,7 @@ motor_obj::motor_obj (TIM_HandleTypeDef * htim, int channel, GPIO_TypeDef * GPIO
  *
  * @param   effort          Desired duty cycle, signed.
  */
- void motor_obj::setEffort(int effort) {
+ void motor_obj :: setEffort (int effort) {
     // Store that speed
     effort = effort;
     

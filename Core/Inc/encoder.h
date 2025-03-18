@@ -14,6 +14,17 @@
 #include "stm32l4xx_hal.h"
 
 /**
+ * @class BaseSensor
+ * @brief An interface class to give controller & scheduler access to a sensor obj.
+ *
+ * Override PollSensor(int) with your plant's sensor read function.
+ */
+class BaseSensor {
+public:
+    virtual float PollSensor () { return 0; };
+};
+
+/**
  * @class enc_obj
  * @brief An encoder object to use with the STM32.
  *
@@ -29,7 +40,7 @@
  * @var enc_obj::Timer
  * TIM_HandleTypeDef * -- STM32 timer handle.
  */
-class enc_obj {
+class enc_obj : public BaseSensor {
 private:
     float               ticks2deg;
     int32_t             count;
@@ -38,8 +49,9 @@ private:
 public:
     enc_obj (TIM_HandleTypeDef * htim, int ticksprev);
     
+    float PollSensor () override { return getAngle(); }
     float update ();
-    float getAngle () { return angle; }
+    float getAngle () { return update(); }
 };
 
 #endif /* INC_ENCODER_H_ */

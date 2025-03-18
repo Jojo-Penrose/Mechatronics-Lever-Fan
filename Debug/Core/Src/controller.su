@@ -1,0 +1,7 @@
+../Core/Src/controller.cpp:23:1:control_obj::control_obj(TIM_HandleTypeDef*, BasePlant*, BaseSensor*)	24	static
+../Core/Src/controller.cpp:44:6:void control_obj::setGains(float, float, float, float)	32	static
+../Core/Src/controller.cpp:57:6:void control_obj::setPoint(float)	16	static
+../Core/Src/controller.cpp:67:6:void control_obj::runPlant(int)	16	static
+../Core/Src/controller.cpp:76:6:void control_obj::readSensor()	16	static
+../Core/Src/controller.cpp:85:6:void control_obj::getDt()	16	static
+../Core/Src/controller.cpp:100:6:void control_obj::runControl()	16	static
